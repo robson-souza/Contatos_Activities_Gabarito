@@ -12,6 +12,7 @@ public class Contato implements Serializable {
     public String nome;
     public String sobrenome;
     public String telefone;
+    public byte[] imagem;
 
     @Override
     public String toString() {
@@ -20,6 +21,7 @@ public class Contato implements Serializable {
                 ", nome='" + nome + '\'' +
                 ", sobrenome='" + sobrenome + '\'' +
                 ", telefone='" + telefone + '\'' +
+                ", imagem='" + imagem + '\'' +
                 '}';
     }
 }

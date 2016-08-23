@@ -1,9 +1,11 @@
 package aulas.pdmi.contatos_activities_gabarito.control;
 
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +21,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.support.v7.app.ActionBar.Tab;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import aulas.pdmi.contatos_activities_gabarito.R;
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static Contato contato = null;
     private String nameFind = "";
     Tab tab1, tab2; //uma das abas da activity, quando em smartphone
+    private byte[] imagem = null; //imagem do contato
 
 
     @Override
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             etNome = (EditText) findViewById(R.id.editText_nome);
             etSobrenome = (EditText) findViewById(R.id.editText_sobrenome);
             etTelefone = (EditText) findViewById(R.id.editText_telefone);
+            imvFoto = (ImageView) findViewById(R.id.imageView);
             lvContatos = (ListView) findViewById(R.id.listView);
             lvContatos.setOnItemClickListener(this); //adiciona a lista de ouvintes
             new Task().execute(GETALL); //executa a operação GET em segundo plano
@@ -88,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
     }
-
-
 
     /*
         Trata eventos das Tabs
@@ -168,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     contato.nome = etNome.getText().toString();
                     contato.sobrenome = etSobrenome.getText().toString();
                     contato.telefone = etTelefone.getText().toString();
+                    contato.imagem = imagem;
                     Log.d(TAG, "Contato que será salvo: " + contato.toString());
                     new Task().execute(SAVE); //executa a operação CREATE em segundo plano
                     new Task().execute(GETALL); //executa a operação GET em segundo plano para atualizar a ListView
@@ -223,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         etSobrenome.setText(null);
         etTelefone.setText(null);
         etNome.requestFocus();
+        imvFoto.setImageResource(R.drawable.foto_sombra);
+        imagem = null;
         contato = new Contato(); //apaga dados antigos
     }
 
@@ -240,6 +247,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         etSobrenome.setText(contato.sobrenome);
         etTelefone.setText(contato.telefone);
         etNome.requestFocus();
+        //carrega a imagem no imageview
+        if(contato.imagem != null){
+            imvFoto.setImageBitmap(BitmapFactory.decodeByteArray(contato.imagem, 0, contato.imagem.length));
+        }
+
     }
 
     /**
@@ -252,6 +264,58 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //associa o adaptador a ListView
         lvContatos.setAdapter(dadosAdapter);
     }
+
+    /*
+        Métodos para carregamento e tratamento da imagem da ImageView.
+     */
+
+    /**
+     * Método que solicita ao sistema operacional a inicialização de uma Activity que saiba obter e devolver imagens.
+     * @param v
+     */
+    public void carregarImagem(View v){
+        //cria uma Intent
+        //primeiro argumento: ação ACTION_PICK "escolha um item a partir dos dados e retorne o seu URI"
+        //segundo argumento: refina a ação para arquivos de imagem, retornando um URI
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        //inicializa uma Activity. Neste caso, uma que forneca acesso a galeria de imagens do dispositivo.
+        startActivityForResult(Intent.createChooser(intent, "Selecione uma imagem"), 0);
+    }
+
+    /**
+     * Método que recebe o retorno da Activity de galeria de imagens.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            Uri arquivoUri = data.getData(); //obtém o URI da imagem
+            Log.d(TAG, "URI da imgem: " + arquivoUri);
+            Bitmap bitmap = null; //mapeia a imagem para um objeto bitmap
+
+            try {
+                bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(arquivoUri));
+                imvFoto.setImageURI(arquivoUri); //coloca a imagem no ImageView
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            byte[] img = getBitmapAsByteArray(bitmap); //converte para um fluxo de bytes
+            imagem = img; //coloca a imagem no objeto imagem (um array de bytes (byte[]))
+        }
+    }
+
+    /**
+     * Converte um Bitmap em um array de bytes (bytes[])
+     * @param bitmap
+     * @return byte[]
+     */
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); //criam um stream para ByteArray
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream); //comprime a imagem
+        return outputStream.toByteArray(); //retorna a imagem como um Array de Bytes (byte[])
+    }
+
 
     /**
      * Detecção do tipo de screen size.

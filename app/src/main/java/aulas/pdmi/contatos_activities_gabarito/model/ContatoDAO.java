@@ -44,7 +44,8 @@ public class ContatoDAO extends SQLiteOpenHelper{
                 "( _id integer primary key autoincrement, " +
                 " nome text, " +
                 " sobrenome text, " +
-                " telefone text);";
+                " telefone text, " +
+                " imagem blob);";
         Log.d(TAG, "Criando a tabela contato. Aguarde ...");
         sqLiteDatabase.execSQL(sql);
         Log.d(TAG, "Tabela contatos criada");
@@ -75,6 +76,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
             values.put("nome", contato.nome);
             values.put("sobrenome", contato.sobrenome);
             values.put("telefone", contato.telefone);
+            values.put("imagem", contato.imagem); //insere o valor (a imagem) na tupla)
 
             //realiza a operação
             if(contato._id == null){
@@ -141,6 +143,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
                 contato.nome = c.getString(c.getColumnIndex("nome"));
                 contato.sobrenome = c.getString(c.getColumnIndex("sobrenome"));
                 contato.telefone = c.getString(c.getColumnIndex("telefone"));
+                contato.imagem = c.getBlob(c.getColumnIndex("imagem"));
 
                 contatos.add(contato);
 
