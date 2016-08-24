@@ -14,24 +14,24 @@ import java.util.List;
 /**
  * Created by vagner on 21/08/16.
  */
-public class ContatoDAO extends SQLiteOpenHelper{
+public class ContatoBD extends SQLiteOpenHelper{
 
     private static String TAG = "contatos_bd";
     private static final String NOME_BD = "contatos.sqlite";
     private static final int VERSAO = 1;
-    private static ContatoDAO contatoDAO = null; //Singleton
+    private static ContatoBD contatoBD = null; //Singleton
 
-    private ContatoDAO(Context context) {
+    private ContatoBD(Context context) {
         // context, nome do banco, factory, versão
         super(context, NOME_BD, null, VERSAO);
     }
 
-    public static ContatoDAO getInstance(Context context){
-        if(contatoDAO == null){
-            contatoDAO = new ContatoDAO(context);
-            return contatoDAO;
+    public static ContatoBD getInstance(Context context){
+        if(contatoBD == null){
+            contatoBD = new ContatoBD(context);
+            return contatoBD;
         }else{
-            return contatoDAO;
+            return contatoBD;
         }
     }
 

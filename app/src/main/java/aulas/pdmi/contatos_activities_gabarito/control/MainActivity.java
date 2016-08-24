@@ -27,7 +27,7 @@ import java.util.List;
 
 import aulas.pdmi.contatos_activities_gabarito.R;
 import aulas.pdmi.contatos_activities_gabarito.adapter.ListAdapter;
-import aulas.pdmi.contatos_activities_gabarito.model.ContatoDAO;
+import aulas.pdmi.contatos_activities_gabarito.model.ContatoBD;
 import aulas.pdmi.contatos_activities_gabarito.model.Contato;
 
 /*
@@ -36,7 +36,7 @@ import aulas.pdmi.contatos_activities_gabarito.model.Contato;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, SearchView.OnQueryTextListener, android.support.v7.app.ActionBar.TabListener {
 
     private static String TAG = "contatos_bd";
-    private ContatoDAO contatoDAO;
+    private ContatoBD contatoBD;
     private EditText etNome;
     private EditText etSobrenome;
     private EditText etTelefone;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
 
         //obtém a instância do objeto de acesso ao banco de dados
-        contatoDAO = ContatoDAO.getInstance(this);
+        contatoBD = ContatoBD.getInstance(this);
         //constrói uma instância da classe de modelo
         contato = new Contato();
 
@@ -339,16 +339,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         protected List<Contato> doInBackground(String... strings) {
             if(strings[0].equals(GETALL)){
-                return contatoDAO.getAll(); //get
+                return contatoBD.getAll(); //get
             }else{
                 if(strings[0].equals(GETBYNOME)){
-                    return contatoDAO.getByname(nameFind); //get
+                    return contatoBD.getByname(nameFind); //get
                 }else{
                     if(strings[0].equals(SAVE)){
-                        count = contatoDAO.save(MainActivity.contato); //create e update
+                        count = contatoBD.save(MainActivity.contato); //create e update
                     }else{
                         if(strings[0].equals(DELETE)){
-                            count = contatoDAO.delete(MainActivity.contato); //delete
+                            count = contatoBD.delete(MainActivity.contato); //delete
                         }
                     }
                 }
