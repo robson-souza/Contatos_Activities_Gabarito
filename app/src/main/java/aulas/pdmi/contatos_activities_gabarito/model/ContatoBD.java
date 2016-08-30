@@ -72,7 +72,6 @@ public class ContatoBD extends SQLiteOpenHelper{
         try{
             //tupla com: chave, valor
             ContentValues values = new ContentValues();
-            values.put("_id", contato._id);
             values.put("nome", contato.nome);
             values.put("sobrenome", contato.sobrenome);
             values.put("telefone", contato.telefone);
@@ -138,7 +137,7 @@ public class ContatoBD extends SQLiteOpenHelper{
             do {
                 Contato contato = new Contato();
 
-                // recupera os atributos de carro
+                // recupera os atributos do cursor para o carro
                 contato._id = c.getLong(c.getColumnIndex("_id"));
                 contato.nome = c.getString(c.getColumnIndex("nome"));
                 contato.sobrenome = c.getString(c.getColumnIndex("sobrenome"));
