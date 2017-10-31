@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private ListView lvContatos;
     private ImageView imvFoto;
     private static final String GETALL = "getAll";
-    private static final String GETBYNOME = "getbynome";
+    private static final String GETBYNAME = "getbyname";
     private static final String SAVE = "save";
     private static final String DELETE = "delete";
     private static Contato contato = null;
@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     //trata eventos dos itens do menu da ActionBar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        tab1.select(); //seleciona a aba 1
         switch (item.getItemId()){
             case R.id.menuitem_salvar:
                 if(!etNome.getText().toString().isEmpty() &&
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if(newText.equals("")){
             new Task().execute(GETALL);
         }else{
-            new Task().execute(GETBYNOME); //executa a operação GET em segundo plano para atualizar a ListView
+            new Task().execute(GETBYNAME); //executa a operação GET em segundo plano para atualizar a ListView
             nameFind = newText; //armazena em uma variável global para uso na task
         }
 
@@ -277,9 +278,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //cria uma Intent
         //primeiro argumento: ação ACTION_PICK "escolha um item a partir dos dados e retorne o seu URI"
         //segundo argumento: refina a ação para arquivos de imagem, retornando um URI
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         //inicializa uma Activity. Neste caso, uma que forneca acesso a galeria de imagens do dispositivo.
-        startActivityForResult(Intent.createChooser(intent, "Selecione uma imagem"), 0);
+        startActivityForResult(Intent.createChooser(intent,
+                "Selecione uma imagem"), 0);
     }
 
     /**
@@ -289,20 +292,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            Uri arquivoUri = data.getData(); //obtém o URI da imagem
-            Log.d(TAG, "URI da imgem: " + arquivoUri);
-            Bitmap bitmap = null; //mapeia a imagem para um objeto bitmap
-
+            Uri arquivoUri = data.getData();
+            Log.d(TAG, "Uri da imagem: " + arquivoUri);
+            imvFoto.setImageURI(arquivoUri);
             try {
-                bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(arquivoUri));
-                imvFoto.setImageURI(arquivoUri); //coloca a imagem no ImageView
+                Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(arquivoUri));
+                bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, true); //reduz e aplica um filtro na imagem
+                byte[] img = getBitmapAsByteArray(bitmap); //converte para um fluxo de bytes
+                imagem = img; //coloca a imagem no objeto imagem (um array de bytes (byte[]))
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-
-            byte[] img = getBitmapAsByteArray(bitmap); //converte para um fluxo de bytes
-            imagem = img; //coloca a imagem no objeto imagem (um array de bytes (byte[]))
         }
+
     }
 
     /**
@@ -341,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if(strings[0].equals(GETALL)){
                 return contatoBD.getAll(); //get
             }else{
-                if(strings[0].equals(GETBYNOME)){
+                if(strings[0].equals(GETBYNAME)){
                     return contatoBD.getByname(nameFind); //get
                 }else{
                     if(strings[0].equals(SAVE)){
