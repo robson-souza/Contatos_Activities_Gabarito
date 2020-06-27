@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Contatos_Activities_Gabarito</string>
+    <string name="app_name">Mobile P2</string>
     
     <!-- ActionBar -->
     <string name="menu_item_salvar">Salvar</string>
@@ -9,7 +9,7 @@
     <string name="titulo_actionbar_list">Contatos</string>
 
     <!-- List e Inputs xml-->
-    <string name="tela1_meuscontatos">Meus de Contatos</string>
+    <string name="tela1_meuscontatos">Menu de Contatos</string>
     <string name="tela1_foto">Foto do contato</string>
     <string name="tela1_nome">Nome: </string>
     <string name="tela1_hint_nome">  insira aqui o nome</string>
